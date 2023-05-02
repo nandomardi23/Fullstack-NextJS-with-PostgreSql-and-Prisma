@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# FULLSTACK NEXTJS DENGAN MENGGUNAKAN PRISMA, AXIOS DAN POSTGRE SQL
 
-## Getting Started
+Pada kali ini saya mengimplemetasikan CRUD sederhana pada nextjs dan menggunakan join table, pada kali ini menggunakan prisma sebagai management database yang ada pada nodejs biasanya, serta menggunakan postgres sql sebagai database untuk menyimpan data
 
-First, run the development server:
+terdapat 2 table yaitu :
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+1. Brands
+2. Products
+
+## PostgreSql
+
+Pada impelementasi kali saya menggunakan PostgreSql pada docker, teman teman bebas menggunakan cara teman teman masing-masing. jalan postgre pada port defaultnya yaitu 5432 dan jika teman-teman mengikuti saya dengan menggunakan docker juga maka copy command yang ada dibawah ini dan sesuaikan dengan config teman teman
+
+```
+    docker run -d \
+    -e POSTGRES_PASSWORD=mypassword \
+    -e POSTGRES_USER=myuser \
+    -p 5432:5432 \
+    --name mypostgres postgres
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## NextJs
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Saya menggunakan Nextjs sebagai framework untuk membuat aplikasi CRUD sederhana, pastikan teman-teman sudah menginstall node js pada komputer teman-teman masing-masing
 
-[http://localhost:3000/api/hello](http://localhost:3000/api/hello) is an endpoint that uses [Route Handlers](https://beta.nextjs.org/docs/routing/route-handlers). This endpoint can be edited in `app/api/hello/route.ts`.
+```
+    npx create-next-app@latest
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+setelah menggunakan command diatas untuk meginstall framework nextjs ke komputer teman-teman ikuti saja langkah-langkah yang perlukan dalam menginstall framework, perhatikan jika ada pertanyaan apakah mau menggunakan /src/ ? pilih no. dan jika ada pertanyaan apakah mau menggunakan /app/ ? pilih yes.
 
-## Learn More
+## DaisyUi
 
-To learn more about Next.js, take a look at the following resources:
+Serta untuk memberikan tampilan yang menarik saat menggunakan website maka saya menggunakan dasiy ui untuk memperindah tampilan website yang saya buat, pastikan saat menginstall nextjs maka kamu harus menginstall juga tailwind css pada project nextjs yang akan digunakan jikan sudah makan tinggal jalankan command yang ada dibawah ini
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+    npm i daisyui
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Jika sudah selesai maka teman-teman wajib menambahakn config di tailwind.config.js pada bagian plugin
 
-## Deploy on Vercel
+```
+    module.exports = {
+  //...
+  plugins: [require("daisyui")],
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Prisma
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Saya Menggunakan supayah mempermudah kita dalam membuat table brand dan product pada postgre, intinya supayah kayak laravel aja gampang untuk migration databasenya entar.
+
+```
+    npm install prisma
+```
+
+setelah selesai menginstall prisma langkah selanjut meng initializati postgres di prisma supayah prisma dapat mengakses postgres
+
+```
+    npx prisma init --datasource-provider postgres
+```
+
+setelah selesai menginitialization maka akan digenerate folder prisma dan file .env
+
+```
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brand {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  title     String
+  price     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  brand     Brand    @relation(fields: [brandId], references: [id])
+  brandId   Int
+}
+```
+
+ikuti config ini untuk membuat table dengan menggunakan prisma
+
+```
+DATABASE_URL="postgresql://admin:admin1234@localhost:5432/next_db?schema=public"
+```
+
+pastikan env ini seprti ini yaa teman teman, jika semua sudah selesai maka teman teman bisa menjalankan command
+
+```
+npx prisma migrate dev
+```
+
+dan
+
+```
+npm run dev
+```
+
+untuk melihat hasil website yang sudah dibuat
