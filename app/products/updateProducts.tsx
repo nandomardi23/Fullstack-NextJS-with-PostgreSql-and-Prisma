@@ -46,8 +46,8 @@ const UpdateProduct = ({
         Edit
       </button>
       <div className={isOpen ? "modal modal-open" : "modal"}>
-        <h3 className=" font-bold text-lg">Update {product.title}</h3>
         <div className="modal-box">
+          <h3 className=" font-bold text-lg">Update {product.title}</h3>
           <form onSubmit={handleUpdate}>
             <div className="form-control w-full">
               <label className="label font-bold">Product Name</label>
